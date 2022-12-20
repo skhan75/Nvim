@@ -57,6 +57,17 @@ function M.setup()
 
   -- Tagbar (ctags)
   map("n", "<leader>cc", "<Cmd>TagbarToggle<Cr>")
+
+  -- Lspsaga
+  map("n", "gh", "<Cmd>Lspsaga lsp_finder<Cr>")
+  map("n", "gr", "<Cmd>Lspsaga rename<Cr>")
+  map("n", "gd", "<Cmd>Lspsaga peek_definition<Cr>")
+  map("n", "<leader>ca", "<Cmd>Lspsaga code_action<Cr>")
+  map("n", "<leader>cd", "<Cmd>Lspsaga show_line_diagnostics<Cr>")
+  map("n", "[e", "<Cmd>Lspsaga diagnostic_jump_prev<Cr>")
+  map("n", "]e", "<Cmd>Lspsaga diagnostic_jump_next<Cr>")
+  --map("n", "<A-d>", "<Cmd>Lspsaga open_floaterm<Cr>")
+  --map("n", "<A-dd>", "<Cmd>Lspsaga close_floaterm<Cr>")
 end
 
 M.setup()

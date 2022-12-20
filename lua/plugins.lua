@@ -42,11 +42,16 @@ function M.setup()
 
     -- Development
     -- use { "tpope/vim-fugitive", event = "BufRead" }
-    -- use({
-    --   "kylechui/nvim-surround",
-    --   tag = "*", -- Use for stability; omit to use `main` branch for the 
-    --   after = "nvim-treesitter",
-    -- })
+    use({
+      "kylechui/nvim-surround",
+      tag = "*", -- Use for stability; omit to use `main` branch for the 
+      after = "nvim-treesitter",
+      config = function()
+        require("nvim-surround").setup({
+          -- Configuration here, or leave empty to use defaults
+        })
+      end
+    })
     -- use { "tpope/vim-dispatch", opt = true, cmd = { "Dispatch", "Make", "Focus", "Start" } }
     -- use { "easymotion/vim-easymotion", event = "BufRead" }
     use {
@@ -86,7 +91,7 @@ function M.setup()
     use {
       "mhartington/oceanic-next",
       "sainnhe/gruvbox-material",
-      "folke/tokyonight.nvim",
+ --     "folke/tokyonight.nvim",
       "EdenEast/nightfox.nvim",
       {
         "Julpikar/night-owl.nvim",
@@ -95,7 +100,6 @@ function M.setup()
             if(has("termguicolors"))
             set termguicolors
             endif
-
             syntax enable
             colorscheme night-owl
             set background=dark
@@ -182,6 +186,27 @@ function M.setup()
         -- require("config.dap").setup()
       end,
     }
+    -- TODO - Add Config with Keymaps
+    use({
+      "glepnir/lspsaga.nvim",
+      branch = "main",
+      config = function()
+        local saga = require("lspsaga")
+        saga.init_lsp_saga()
+      end,
+    })
+    --use({
+    --  'ray-x/navigator.lua',
+    --  requires = {
+    --    { 'ray-x/guihua.lua', run = 'cd lua/fzy && make' },
+    --    { 'neovim/nvim-lspconfig' },
+    --  },
+    --  config = function()
+    --    require("navigator").setup({
+    --      mason = true,
+    --    })
+    --  end,
+    --})
 
     -- Completion
     use {
@@ -270,12 +295,11 @@ function M.setup()
       end,
     }
 
-
     -- Markdown
-    use({
+    use {
       "iamcco/markdown-preview.nvim",
       run = function() vim.fn["mkdp#util#install"]() end,
-    })
+    }
 
   end
 
