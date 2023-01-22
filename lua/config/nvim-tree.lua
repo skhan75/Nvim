@@ -4,7 +4,7 @@ function M.setup()
     local nvim_tree = require "nvim-tree"
     nvim_tree.setup({
         sort_by = "case_sensitive",
-        create_in_closed_folder = true, -- Creates file inside the current selected closed folder instead of parent
+        -- create_in_closed_folder = true, -- Creates file inside the current selected closed folder instead of parent
         hijack_cursor = true,
         select_prompts = true,
         view = {

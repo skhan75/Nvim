@@ -20,7 +20,7 @@ function M.setup()
     tsconfigs.setup {
         -- A list of parser names, or "all"
         ensure_installed = { "c", "lua", "rust", "java", "python", "javascript", "typescript", "html", "markdown", "go",
-        "json", "php", "yaml" },
+        "json", "php", "yaml", "vim" },
         auto_install = true,
         highlight = {
             enable = true,

@@ -42,6 +42,7 @@ function M.setup()
   -- Telescope find files
   map("n", "<leader>t", "<Cmd>Telescope<Cr>")
   map("n", "<leader>ff", "<Cmd>Telescope find_files<Cr>")
+  map("n", "<leader>fp", "<Cmd>Telescope find_project_files<Cr>")
   map("n", "<leader>fg", "<Cmd>Telescope live_grep<Cr>")
   map("n", "<leader>fs", "<Cmd>Telescope grep_string<Cr>")
   map("n", "<leader>fb", "<Cmd>Telescope buffers<Cr>")

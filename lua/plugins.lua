@@ -187,14 +187,15 @@ function M.setup()
       end,
     }
     -- TODO - Add Config with Keymaps
-    use({
-      "glepnir/lspsaga.nvim",
-      branch = "main",
-      config = function()
-        local saga = require("lspsaga")
-        saga.init_lsp_saga()
-      end,
-    })
+    --use({
+    --  "glepnir/lspsaga.nvim",
+    --  branch = "main",
+    --  config = function()
+    --    require('lspsaga').setup({})
+--  --      local saga = require("lspsaga")
+--  --      saga.init_lsp_saga()
+    --  end,
+    --})
     --use({
     --  'ray-x/navigator.lua',
     --  requires = {
