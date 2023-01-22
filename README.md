@@ -11,4 +11,9 @@ My nvim conifgurations
 	* Added vim as parser to Nvim Treesiter parser list
 * Nvim Tree - create_in_closed_folder is deprecated and is a default option
 	* Fixed by removing the boolean config in nvim-tree.lua setup
-
+* Error - Error executing lua: Vim(return):E121: Undefined variable: can_jump_forwards stack traceback: [C]: in function 'UltiSnips#CanJumpForwards' 
+	* Issue - Failed to load python3 host. You can try to see wha...ile. Also, the host stderr is available in messages. 
+		* :checkhealth logs
+			* ERROR: pynvim is not installed
+			* Command error (job=9, exit code 1) ...
+	* Fix - Installed and updated pynvim
