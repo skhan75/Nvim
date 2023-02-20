@@ -42,9 +42,9 @@ function M.setup()
       },
     },
     snippet = {
-      expand = function(args)
-        vim.fn["UltiSnips#Anon"](args.body)
-      end,
+      --expand = function(args)
+      --  vim.fn["UltiSnips#Anon"](args.body)
+      --end,
     },
     window = {
       documentation = {
@@ -122,6 +122,7 @@ function M.setup()
       ["<Tab>"] = cmp.mapping({
         i = function(fallback)
           if cmp.visible() then
+            print("HELLO")
             cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
           elseif vim.fn["UltiSnips#CanJumpForwards"]() == 1 then
             vim.api.nvim_feedkeys(t("<Plug>(ultisnips_jump_forward)"), 'm', true)

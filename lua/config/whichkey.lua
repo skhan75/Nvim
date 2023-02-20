@@ -102,6 +102,13 @@ local mappings = {
     C = { "<cmd>Telescope commands<cr>", "Commands" },
     f = { "<Cmd>Telescope find_files<Cr>", "Find files" },
   },
+
+  -- Text 
+  t = {
+    name = "Text",
+    w = { "vaw", "Select Word under Cursor" },
+    yw = { "yaw", "Yank Word under Cursor" },
+  }
 }
 
 local lsp_mappings = {
