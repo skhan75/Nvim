@@ -70,8 +70,12 @@ function M.setup()
   --map("n", "<A-d>", "<Cmd>Lspsaga open_floaterm<Cr>")
   --map("n", "<A-dd>", "<Cmd>Lspsaga close_floaterm<Cr>")
 
+
+  -- Delete a whole word with Ctrl + Backspace
+  map("i", "<C-H>", "<C-W>")
+
   -- TODO
-  -- Create mapping for search and replace all occurences of the word under the cursor
+  -- Create mappiforsearch and replace all occurences of the word under the cursor
   -- Create mapping for delete word on Ctrl+Backspace
 end
 

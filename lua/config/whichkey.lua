@@ -52,7 +52,6 @@ local mappings = {
     b = { "<Cmd>Telescope buffers<Cr>", "Search buffers" },
     g = { "<Cmd>Telescope live_grep<Cr>", "Live grep" },
     c = { "<Cmd>Telescope current_buffer_fuzzy_find<Cr>", "Search current buffer" },
-    gf = { "<Cmd>Telescope git_files<Cr>", "Git files" },
     h = { "<Cmd>Telescope help_tags<Cr>", "Help" },
     p = { "<Cmd>Telescope file_browser<Cr>", "Pop-up file browser" },
     m = { "<Cmd>Telescope marks<Cr>", "Mark" },
@@ -61,6 +60,11 @@ local mappings = {
     t = { "<Cmd>Telescope<CR>", "Telescope" },
     l = { "<Cmd>e!<CR>", "Reload file" },
     j = { "<Cmd>Telescope zoxide list<CR>", "Jump to folder" },
+  },
+
+  -- Git Files 
+  g = {
+    f = { "<Cmd>Telescope git_files<Cr>", "Git files" },
   },
 
   -- Buffer

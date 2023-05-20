@@ -14,13 +14,13 @@ local function packer_init()
     }
     vim.cmd [[packadd packer.nvim]]
   end
-  -- Autocommand that reloads neovim whenever you save the plugins.lua file
-  -- vim.cmd [[
-  --   augroup packer_user_config
-  --       autocmd!
-  --       autocmd BufWritePost plugins.lua source <afile> | PackerSync
-  --   augroup end
-  -- ]]
+  --Autocommand that reloads neovim whenever you save the plugins.lua file
+  vim.cmd [[
+    augroup packer_user_config
+    autocmd!
+    autocmd BufWritePost plugins.lua source <afile> | PackerSync
+    augroup end
+  ]]
   vim.cmd "autocmd BufWritePost plugins.lua source <afile> | PackerCompile"
 end
 
@@ -37,11 +37,9 @@ function M.setup()
   }
 
   local function plugins(use)
-    -- Have packer manage itself
     use { "wbthomason/packer.nvim" }
 
     -- Development
-    -- use { "tpope/vim-fugitive", event = "BufRead" }
     use({
       "kylechui/nvim-surround",
       tag = "*", -- Use for stability; omit to use `main` branch for the 
@@ -52,8 +50,6 @@ function M.setup()
         })
       end
     })
-    -- use { "tpope/vim-dispatch", opt = true, cmd = { "Dispatch", "Make", "Focus", "Start" } }
-    -- use { "easymotion/vim-easymotion", event = "BufRead" }
     use {
       "folke/which-key.nvim",
       config = function()
@@ -63,9 +59,6 @@ function M.setup()
 
     use { "majutsushi/tagbar" }
     use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
-
-    -- Internal
-    -- use { "/home/khansa/workspace/nvim-plugins/basicplugin.nvim"}
 
     -- Movement
     use { 
@@ -87,23 +80,28 @@ function M.setup()
       end
     }
 
+    use {
+      'numToStr/Comment.nvim',
+      config = function()
+        require('Comment').setup()
+      end
+    }
+
     -- Themes
+    use { "bluz71/vim-moonfly-colors", as = "moonfly" }
     use {
       "mhartington/oceanic-next",
       "sainnhe/gruvbox-material",
- --     "folke/tokyonight.nvim",
+      "bluz71/vim-nightfly-colors", as = "nightfly",
       "EdenEast/nightfox.nvim",
+      "Julpikar/night-owl.nvim",
       {
-        "Julpikar/night-owl.nvim",
+        "tiagovla/tokyodark.nvim",
         config = function() -- move config to respective theme to change
-          vim.cmd [[
-            if(has("termguicolors"))
-            set termguicolors
-            endif
-            syntax enable
-            colorscheme night-owl
-            set background=dark
-            ]]
+          vim.g.tokyodark_transparent_background = false
+          vim.g.tokyodark_enable_italic_comment = true
+          vim.g.tokyodark_enable_italic = false
+          vim.cmd [[ colorscheme night-owl ]]
         end
       }
     }
@@ -114,7 +112,6 @@ function M.setup()
         require("transparent").setup({
           extra_groups = { -- table/string: additional groups that should be cleared
             -- In particular, when you set it to 'all', that means all available groups
-
             -- example of akinsho/nvim-bufferline.lua
             "BufferLineTabClose",
             "BufferlineBufferSelected",
@@ -179,7 +176,7 @@ function M.setup()
       requires = { "kyazdani42/nvim-web-devicons" }
     }
 
-    -- -- Project settings
+    -- Project settings
     use {
       "ahmedkhalf/project.nvim",
       event = "VimEnter",
@@ -190,6 +187,15 @@ function M.setup()
 
     -- LSP
     use {
+      "neovim/nvim-lspconfig",
+      as = "nvim-lspconfig",
+      after = "nvim-treesitter",
+      config = function()
+        require("config.lsp").setup()
+      end,
+    }
+
+    use {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "simrat39/rust-tools.nvim",
@@ -197,56 +203,33 @@ function M.setup()
       "christianchiarulli/lua-dev.nvim",
       "b0o/SchemaStore.nvim"
     }
-    use {
-      "neovim/nvim-lspconfig",
-      as = "nvim-lspconfig",
-      after = "nvim-treesitter",
-      config = function()
-        require("config.lsp").setup()
-        -- require("config.dap").setup()
-      end,
-    }
-    -- TODO - Add Config with Keymaps
-    --use({
-    --  "glepnir/lspsaga.nvim",
-    --  branch = "main",
-    --  config = function()
-    --    require('lspsaga').setup({})
---  --      local saga = require("lspsaga")
---  --      saga.init_lsp_saga()
-    --  end,
-    --})
-    --use({
-    --  'ray-x/navigator.lua',
-    --  requires = {
-    --    { 'ray-x/guihua.lua', run = 'cd lua/fzy && make' },
-    --    { 'neovim/nvim-lspconfig' },
-    --  },
-    --  config = function()
-    --    require("navigator").setup({
-    --      mason = true,
-    --    })
-    --  end,
-    --})
+
+    -- Copilot
+    -- use { "github/copilot.vim" }
+
+    -- Snippets
+    use "L3MON4D3/LuaSnip" --snippet engine
+    use "rafamadriz/friendly-snippets" -- a bunch of snippets to use
 
     -- Completion
     use {
       "hrsh7th/nvim-cmp",
       requires = {
-        "quangnguyen30192/cmp-nvim-ultisnips",
-        config = function()
-          -- optional call to setup (see customization section)
-          require("cmp_nvim_ultisnips").setup {}
-        end,
+        -- "quangnguyen30192/cmp-nvim-ultisnips",
+        -- config = function()
+        --   -- optional call to setup (see customization section)
+        --   require("cmp_nvim_ultisnips").setup {}
+        -- end,
         "hrsh7th/cmp-buffer",
+        "hrsh7th/cmp-path",
+        "hrsh7th/cmp-cmdline",
+        "saadparwaiz1/cmp_luasnip",
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-nvim-lua",
-        "hrsh7th/cmp-path",
+        "hrsh7th/cmp-emoji",
         "hrsh7th/cmp-calc",
-        "hrsh7th/cmp-cmdline",
         "octaltree/cmp-look",
         "f3fora/cmp-spell",
-        "hrsh7th/cmp-emoji",
         "ray-x/cmp-treesitter",
         "hrsh7th/cmp-nvim-lsp-document-symbol",
       },
@@ -255,18 +238,17 @@ function M.setup()
       end,
     }
 
-    -- Snippets
-    use {
-      "SirVer/ultisnips",
-      requires = { { "honza/vim-snippets", rtp = "." }, "mlaursen/vim-react-snippets" },
-      config = function()
-        vim.g.UltiSnipsExpandTrigger = "<Plug>(ultisnips_expand)"
-        vim.g.UltiSnipsJumpForwardTrigger = "<Plug>(ultisnips_jump_forward)"
-        vim.g.UltiSnipsJumpBackwardTrigger = "<Plug>(ultisnips_jump_backward)"
-        vim.g.UltiSnipsListSnippets = "<c-x><c-s>"
-        vim.g.UltiSnipsRemoveSelectModeMappings = 0
-      end,
-    }
+    -- use {
+    --   "SirVer/ultisnips",
+    --   requires = { { "honza/vim-snippets", rtp = "." }, "mlaursen/vim-react-snippets" },
+    --   config = function()
+    --     vim.g.UltiSnipsExpandTrigger = "<Plug>(ultisnips_expand)"
+    --     vim.g.UltiSnipsJumpForwardTrigger = "<Plug>(ultisnips_jump_forward)"
+    --     vim.g.UltiSnipsJumpBackwardTrigger = "<Plug>(ultisnips_jump_backward)"
+    --     vim.g.UltiSnipsListSnippets = "<c-x><c-s>"
+    --     vim.g.UltiSnipsRemoveSelectModeMappings = 0
+    --   end,
+    -- }
 
     use { 'morgsmccauley/vim-react-native-snippets' }
 

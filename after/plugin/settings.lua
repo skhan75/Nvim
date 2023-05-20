@@ -26,15 +26,6 @@ function M.auto_cmds()
   -- don't auto commenting new lines
   -- vim.cmd [[au BufEnter * set fo-=c fo-=r fo-=o]]
 
-
-  -- Auto format
-  -- vim.api.nvim_exec([[
-  -- augroup auto_fmt
-  --     autocmd!
-  --     autocmd BufWritePre *.py,*.lua,*.rs try | undojoin | Neoformat | catch /^Vim\%((\a\+)\)\=:E790/ | finally | silent Neoformat | endtry
-  -- aug END
-  -- ]], false)
-
   -- Terminal
   vim.api.nvim_exec(
     [[
@@ -61,16 +52,19 @@ function M.auto_cmds()
     false
   )
 
-  -- vim.cmd [[ autocmd CmdWinEnter * quit ]]
-
   -- Window highlight
-  vim.api.nvim_exec(
-    [[
-      hi InactiveWindow guibg=#282C34
-      autocmd VimEnter * set winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
-    ]],
-    false
-  )
+  -- vim.api.nvim_exec(
+  --   [[
+  --     hi InactiveWindow guibg=#282C34
+  --     autocmd VimEnter * set winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
+  --   ]],
+  --   false
+
+  -- Nvim Tree Open on Startup
+  local function open_nvim_tree()
+    require("nvim-tree.api").tree.open()
+  end
+  vim.api.nvim_create_autocmd({ "VimEnter " }, { callback = open_nvim_tree })
 
   -- nnoremap g1 <cmd>!tmux new-window vd <cfile><CR>
   -- nnoremap g1 <cmd>vsplit term://vd <cfile><CR>

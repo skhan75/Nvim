@@ -1,8 +1,21 @@
 local M = {}
 
-function M.setup()
-  local cmp = require "cmp"
+local cmp_status_ok, cmp = pcall(require, "cmp")
+if not cmp_status_ok then
+ return
+end
 
+local snip_status_ok, luasnip = pcall(require, "luasnip")
+if not snip_status_ok then
+ return
+end
+
+local check_backspace = function()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match "%s" == nil
+end
+
+function M.setup()
   local has_any_words_before = function()
     if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then
       return false
@@ -19,8 +32,6 @@ function M.setup()
     return vim.api.nvim_replace_termcodes(str, true, true, true)
   end
 
-  local cmp_ultisnips_mappings = require("cmp_nvim_ultisnips.mappings")
-
   cmp.setup {
     formatting = {
       format = require("lspkind").cmp_format {
@@ -29,8 +40,6 @@ function M.setup()
           nvim_lsp = "[LSP]",
           buffer = "[Buffer]",
           nvim_lua = "[Lua]",
-          ultisnips = "[UltiSnips]",
-          vsnip = "[vSnip]",
           treesitter = "[treesitter]",
           look = "[Look]",
           path = "[Path]",
@@ -42,126 +51,121 @@ function M.setup()
       },
     },
     snippet = {
-      --expand = function(args)
-      --  vim.fn["UltiSnips#Anon"](args.body)
-      --end,
+      expand = function(args)
+        luasnip.lsp_expand(args.body) -- For `luasnip` user.
+      end,
     },
     window = {
       documentation = {
         border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
       },
     },
-    completion = { completeopt = "menu,menuone,noinsert", keyword_length = 1 },
-    mapping = {
-      ["<C-j>"] = cmp.mapping {
-        c = function()
-          if cmp.visible() then
-            cmp.select_next_item { behavior = cmp.SelectBehavior.Insert }
-          else
-            vim.api.nvim_feedkeys(t "<Down>", "n", true)
-          end
-        end,
-        i = function(fallback)
-          if cmp.visible() then
-            cmp.select_next_item { behavior = cmp.SelectBehavior.Insert }
-          else
-            fallback()
-          end
-        end,
+    completion = {
+      border = "rounded",
+      winhighlight = "NormalFloat:Pmenu,NormalFloat:Pmenu,CursorLine:PmenuSel,Search:None",
+    },
+    mapping = cmp.mapping.preset.insert {
+      ["<C-k>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
+      ["<C-j>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
+      ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
+      ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
+      ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
+      ["<m-o>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
+      -- ["<C-y>"] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
+      ["<C-c>"] = cmp.mapping {
+        i = cmp.mapping.abort(),
+        c = cmp.mapping.close(),
       },
-      ["<C-k>"] = cmp.mapping {
-        c = function()
-          if cmp.visible() then
-            cmp.select_prev_item { behavior = cmp.SelectBehavior.Insert }
-          else
-            vim.api.nvim_feedkeys(t "<Up>", "n", true)
-          end
-        end,
-        i = function(fallback)
-          if cmp.visible() then
-            cmp.select_prev_item { behavior = cmp.SelectBehavior.Insert }
-          else
-            fallback()
-          end
-        end,
+      ["<m-j>"] = cmp.mapping {
+        i = cmp.mapping.abort(),
+        c = cmp.mapping.close(),
       },
-      -- ["<Down>"] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Select },
-      -- ["<Up>"] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Select },
-      ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
-      ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
-      ["<C-Space>"] = cmp.mapping {
-        i = function(fallback)
-          if cmp.visible() then
-            if vim.fn["UltiSnips#CanExpandSnippet"]() == 1 then
-              return press "<C-R>=UltiSnips#ExpandSnippet()<CR>"
-            end
-            cmp.confirm { behavior = cmp.ConfirmBehavior.Replace }
-          elseif has_any_words_before() then
-            press "<Space>"
-          else
-            fallback()
-          end
-        end,
-        c = function()
-          if cmp.visible() then
-            cmp.confirm { behavior = cmp.ConfirmBehavior.Replace }
-          else
-            vim.api.nvim_feedkeys(t "<Down>", "n", true)
-          end
-        end,
+      ["<m-k>"] = cmp.mapping {
+        i = cmp.mapping.abort(),
+        c = cmp.mapping.close(),
       },
-      ["<C-e>"] = cmp.mapping.close(),
-      ["<C-y>"] = cmp.mapping.confirm {
-        behavior = cmp.ConfirmBehavior.Replace,
-        select = true,
+      ["<m-c>"] = cmp.mapping {
+        i = cmp.mapping.abort(),
+        c = cmp.mapping.close(),
       },
-      ["<CR>"] = cmp.mapping.confirm {
-        behavior = cmp.ConfirmBehavior.Replace,
-        select = true,
+      ["<S-CR>"] = cmp.mapping {
+        i = cmp.mapping.abort(),
+        c = cmp.mapping.close(),
       },
-      ["<Tab>"] = cmp.mapping({
-        i = function(fallback)
-          if cmp.visible() then
-            print("HELLO")
-            cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
-          elseif vim.fn["UltiSnips#CanJumpForwards"]() == 1 then
-            vim.api.nvim_feedkeys(t("<Plug>(ultisnips_jump_forward)"), 'm', true)
-          else
-            fallback()
-          end
-        end,
-        s = function(fallback)
-          if vim.fn["UltiSnips#CanJumpForwards"]() == 1 then
-            vim.api.nvim_feedkeys(t("<Plug>(ultisnips_jump_forward)"), 'm', true)
-          else
-            fallback()
-          end
-        end
-      }),
-      ["<S-Tab>"] = cmp.mapping(function(fallback)
-        if vim.fn["UltiSnips#CanJumpBackwards"]() == 1 then
-          press "<ESC>:call UltiSnips#JumpBackwards()<CR>"
-        elseif cmp.visible() then
-          cmp.select_prev_item()
+      -- Accept currently selected item. If none selected, `select` first item.
+      -- Set `select` to `false` to only confirm explicitly selected items.
+      ["<CR>"] = cmp.mapping.confirm { select = false },
+      ["<Right>"] = cmp.mapping.confirm { select = true },
+      ["<Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_next_item()
+        elseif luasnip.jumpable(1) then
+          luasnip.jump(1)
+        elseif luasnip.expand_or_jumpable() then
+          luasnip.expand_or_jump()
+        elseif luasnip.expandable() then
+          luasnip.expand()
+        elseif check_backspace() then
+          -- cmp.complete()
+          fallback()
         else
-          press "<S-Tab>"
           fallback()
         end
       end, {
           "i",
           "s",
-          "c",
+        }),
+      ["<S-Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_prev_item()
+        elseif luasnip.jumpable(-1) then
+          luasnip.jump(-1)
+        else
+          fallback()
+        end
+      end, {
+          "i",
+          "s",
         }),
     },
     sources = {
-      { name = "nvim_lsp", max_item_count = 10 },
-      { name = "nvim_lua", max_item_count = 5 },
-      { name = "ultisnips", max_item_count = 5 },
-      -- { name = "vsnip", max_item_count = 5 },
-      { name = "buffer", keyword_length = 5, max_item_count = 5 },
-      { name = "path" },
-      { name = "treesitter", max_item_count = 10 },
-      { name = "crates" },
+      { name = "nvim_lsp", max_item_count = 10, group_index = 1 },
+      { name = "nvim_lua", max_item_count = 5, group_index = 1 },
+      {
+        name = "copilot",
+        max_item_count = 3,
+        trigger_characters = {
+          {
+            ".",
+            ":",
+            "(",
+            "'",
+            '"',
+            "[",
+            ",",
+            "#",
+            "*",
+            "@",
+            "|",
+            "=",
+            "-",
+            "{",
+            "/",
+            "\\",
+            "+",
+            "?",
+            " ",
+            -- "\t",
+            -- "\n",
+          },
+        },
+        group_index = 2,
+      },
+      { name = "luasnip", max_item_count = 5, group_index = 1},
+      { name = "buffer", keyword_length = 5, max_item_count = 5, group_index = 2 },
+      { name = "path", group_index = 2 },
+      { name = "treesitter", max_item_count = 10, group_index = 2 },
+      { name = "crates", group_index = 2 },
       -- { name = "cmp_openai_codex" },
       -- { name = "emoji" },
       -- { name = "neorg" },
@@ -170,7 +174,7 @@ function M.setup()
       -- { name = "spell" },
       -- { name = "cmp_tabnine" },
     },
-    experimental = { native_menu = false, ghost_text = false },
+    experimental = { ghost_text = true }, 
   }
 end
 
