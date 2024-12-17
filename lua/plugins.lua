@@ -35,6 +35,10 @@ function M.setup()
     -- Speed up loading Lua modules in Neovim to improve startup time
     use { "lewis6991/impatient.nvim" }
 
+    use {
+      'tpope/vim-surround'
+    }
+
     -- Nvim Tree File Explorer
     use {
       'nvim-tree/nvim-tree.lua',
@@ -60,7 +64,7 @@ function M.setup()
         local ok, treesitter = pcall(require, 'nvim-treesitter.configs')
         if ok then
           treesitter.setup {
-            ensure_installed = { "c", "lua", "java", "python", "javascript", "go", "markdown", "json", "yaml", "vim", "typescript" },
+            ensure_installed = { "c", "lua", "java", "python", "javascript", "go", "markdown", "json", "yaml", "vim", "typescript", "elixir", "heex", "eex" },
             sync_install = false,  -- Install parsers synchronously (only applied to `ensure_installed`)
             ignore_install = { "" }, -- List of parsers to ignore installing
             auto_install = true,
@@ -93,6 +97,16 @@ function M.setup()
     use 'Mofiqul/dracula.nvim'
     use 'catppuccin/nvim'
     use 'Julpikar/night-owl.nvim'
+    use { "ellisonleao/gruvbox.nvim" }
+    use {
+      'Shatur/neovim-ayu',
+      config = function()
+        require('ayu').setup({
+          mirage = true,
+          overrides = {},
+        })
+      end
+    }
 
     -- Movement
     use {
@@ -358,21 +372,21 @@ function M.setup()
         local ok, leap = pcall(require, 'leap')
         if ok then
           leap.setup({
-            max_phase_one_targets = nil,
-            highlight_unlabeled_phase_one_targets = true,
-            max_highlighted_traversal_targets = 10,
-            case_sensitive = false,
-            equivalence_classes = { ' \t\r\n', '.' }, -- treat space and tab as equivalent
-            substitute_chars = {},
-            safe_labels = { 's', 'f', 'n', 'u', 't', '/'},
-            labels = { 's', 'f', 'n', 'u', 't', '/', 'S', 'F', 'N', 'U', 'T', '?'},
-            special_keys = {
-              repeat_search = ';',
-              next_phase_one_target = '<enter>',
-              next_target = {';', '<enter>'},
-              next_group = '<space>',
-              prev_target = {',', '<tab>'},
-            },
+            --max_phase_one_targets = nil,
+            --highlight_unlabeled_phase_one_targets = true,
+            --max_highlighted_traversal_targets = 10,
+            --case_sensitive = false,
+            --equivalence_classes = { ' \t\r\n', '.' }, -- treat space and tab as equivalent
+            --substitute_chars = {},
+            --safe_labels = { 's', 'f', 'n', 'u', 't', '/'},
+            --labels = { 's', 'f', 'n', 'u', 't', '/', 'S', 'F', 'N', 'U', 'T', '?'},
+            --special_keys = {
+            --  repeat_search = ';',
+            --  next_phase_one_target = '<enter>',
+            --  next_target = {';', '<enter>'},
+            --  next_group = '<space>',
+            --  prev_target = {',', '<tab>'},
+            --},
           })
         end
       end
@@ -412,6 +426,49 @@ function M.setup()
     -- Formatting
     use { 'mhartington/formatter.nvim' }
 
+    use {
+      'stevearc/aerial.nvim',
+      config = function()
+        local ok, aerial = pcall(require, 'aerial')
+        if ok then
+          aerial.setup({
+            -- Choose which backends to use for symbol outlines
+            backends = { "lsp", "treesitter", "markdown" },
+            -- Customize aerial’s layout and position
+            layout = {
+              default_direction = 'prefer_right',
+              min_width = 30,
+            },
+            manage_folds = true,
+            highlight_closest = true,
+            nerd_font = "auto",
+            -- Control how aerial attaches to buffers
+            attach_mode = 'global',
+
+            -- Customize keymaps within the aerial buffer for navigation
+            -- You can also set these in your normal configuration if you prefer
+            keymaps = {
+              ["<CR>"] = "actions.jump",         -- Jump to symbol definition on <CR>
+              ["<2-LeftMouse>"] = "actions.jump", -- Jump to symbol definition on double-click
+              ["<leader>a"] = "toggle",           -- Toggle aerial with <leader>a
+              ["{"] = "actions.prev",
+              ["}"] = "actions.next",
+              ["[["] = "actions.prev_up",
+              ["]]"] = "actions.next_up",
+              ["<C-j>"] = "actions.down_and_scroll",
+              ["<C-k>"] = "actions.up_and_scroll",
+            },
+          })
+        else
+          vim.notify("Error loading Aerial", vim.log.levels.ERROR)
+        end
+      end
+    }
+
+    use {
+      'ThePrimeagen/harpoon',
+      requires = { 'nvim-lua/plenary.nvim' } -- Harpoon depends on plenary.nvim
+    }
 
   end
 
