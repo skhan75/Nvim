@@ -36,8 +36,23 @@ function M.setup()
     use { "lewis6991/impatient.nvim" }
 
     use {
-      'tpope/vim-surround'
+      "kylechui/nvim-surround",
+      config = function()
+        require("nvim-surround").setup({
+          -- Configuration here, or leave empty to use defaults
+        })
+      end,
     }
+
+    use {
+      "folke/which-key.nvim",
+      config = function()
+        require("which-key").setup({
+          -- Optional: Add any desired configuration here
+        })
+      end,
+    }
+
 
     -- Nvim Tree File Explorer
     use {
@@ -468,6 +483,92 @@ function M.setup()
     use {
       'ThePrimeagen/harpoon',
       requires = { 'nvim-lua/plenary.nvim' } -- Harpoon depends on plenary.nvim
+    }
+
+    -- Terminal Configurations
+    use {"akinsho/toggleterm.nvim", tag = '*',
+      config = function ()
+        require("toggleterm").setup{
+          size = 20,
+          open_mapping = [[<C-\>]], -- Keybinding to toggle the terminal
+          hide_numbers = true, -- Hide line numbers in terminal buffers
+          shade_filetypes = {},
+          shade_terminals = true,
+          shading_factor = 2, -- Dim the terminal
+          start_in_insert = true, -- Start terminal in insert mode
+          insert_mappings = true, -- Allow open mapping in insert mode
+          terminal_mappings = true, -- Use terminal mapping
+          persist_size = true,
+          direction = 'float', -- Open terminal as a floating window
+          close_on_exit = true, -- Close terminal when the process exits
+          shell = vim.o.shell, -- Use the default shell
+          float_opts = {
+            border = 'curved', -- Border style: single, double, shadow, curved, etc.
+            winblend = 15, -- Transparency of the floating window
+            highlights = {
+              border = "Normal",
+              background = "Normal",
+            }
+          }
+        }
+      end
+    }
+
+    use {
+      'lewis6991/gitsigns.nvim',
+      requires = { 'nvim-lua/plenary.nvim' },
+      config = function()
+        require('gitsigns').setup {
+          signs = {
+            add          = { text = '┃' },
+            change       = { text = '┃' },
+            delete       = { text = '_' },
+            topdelete    = { text = '‾' },
+            changedelete = { text = '~' },
+            untracked    = { text = '┆' },
+          },
+          signs_staged = {
+            add          = { text = '┃' },
+            change       = { text = '┃' },
+            delete       = { text = '_' },
+            topdelete    = { text = '‾' },
+            changedelete = { text = '~' },
+            untracked    = { text = '┆' },
+          },
+          signs_staged_enable = true,
+          signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
+          numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
+          linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
+          word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
+          watch_gitdir = {
+            follow_files = true,
+          },
+          auto_attach = true,
+          attach_to_untracked = false,
+          current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+          current_line_blame_opts = {
+            virt_text = true,
+            virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+            delay = 1000,
+            ignore_whitespace = false,
+            virt_text_priority = 100,
+            use_focus = true,
+          },
+          current_line_blame_formatter = '<author>, <author_time:%R> - <summary>',
+          sign_priority = 6,
+          update_debounce = 100,
+          status_formatter = nil, -- Use default
+          max_file_length = 40000, -- Disable if file is longer than this (in lines)
+          preview_config = {
+            -- Options passed to `nvim_open_win`
+            border = 'single',
+            style = 'minimal',
+            relative = 'cursor',
+            row = 0,
+            col = 1,
+          },
+        }
+      end
     }
 
   end

@@ -50,8 +50,8 @@ mason_lspconfig.setup_handlers {
       }
     }
 
-    -- Custom handler for tsserver to suppress specific warnings
-    if server_name == "tsserver" then
+    -- Custom handler for ts_ls to suppress specific warnings
+    if server_name == "ts_ls" then
       config.handlers = {
         ["textDocument/publishDiagnostics"] = function(_, result, ctx, config)
           result.diagnostics = vim.tbl_filter(function(diagnostic)

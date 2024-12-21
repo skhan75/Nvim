@@ -2,7 +2,11 @@ local M = {}
 
 M.setup = function()
   -- Setup nvim-cmp
-  local cmp = require'cmp'
+  local ok, cmp = pcall(require, 'cmp')
+  if not ok then
+    vim.notify("nvim-cmp not installed", vim.log.levels.ERROR)
+    return
+  end
 
   cmp.setup({
     snippet = {
@@ -65,19 +69,30 @@ M.setup = function()
   local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
   -- Common LSP keybindings
-  local on_attach = function(_, bufnr)
+  local on_attach = function(client, bufnr)
+    -- Check if the LSP client supports certain capabilities
+    if not client.server_capabilities then
+      return
+    end
+
     local opts = { noremap=true, silent=true, buffer=bufnr }
 
     -- Keybindings for LSP actions
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
     vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
-    vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format({ async = true }) end, opts)
+    vim.keymap.set('n', '<leader>f', function()
+      if client.server_capabilities.documentFormattingProvider then
+        vim.lsp.buf.format({ async = true })
+      elseif client.server_capabilities.documentRangeFormattingProvider then
+        vim.lsp.buf.range_formatting()
+      end
+    end, opts)
 
     -- Diagnostic keybindings
     vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
