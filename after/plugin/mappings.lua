@@ -1,18 +1,30 @@
 local wk = require("which-key")
 
+--local function map_with_which_key(mode, lhs, rhs, opts)
+--  local options = { noremap = true, silent = true }
+--  if opts then
+--    options = vim.tbl_extend("force", options, opts)
+--  end
+--  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+--
+--  -- Register with which-key
+--  if opts and opts.desc then
+--    wk.register({
+--      [lhs] = { rhs, opts.desc },
+--    }, { mode = mode })
+--  end
+--end
+
 local function map_with_which_key(mode, lhs, rhs, opts)
   local options = { noremap = true, silent = true }
   if opts then
     options = vim.tbl_extend("force", options, opts)
   end
-  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 
-  -- Register with which-key
-  if opts and opts.desc then
-    wk.register({
-      [lhs] = { rhs, opts.desc },
-    }, { mode = mode })
-  end
+  -- Register directly with which-key
+  wk.register({
+    [lhs] = { rhs, opts.desc or "" },
+  }, { mode = mode })
 end
 
 -- Basic File and Text Searching

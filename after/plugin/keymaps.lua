@@ -68,7 +68,7 @@ function M.setup()
   --map("n", "<A-d>", "<Cmd>Lspsaga open_floaterm<Cr>")
   --map("n", "<A-dd>", "<Cmd>Lspsaga close_floaterm<Cr>")
 
-  -- TODO
+  -- TODO: Do it sometime soon
   -- Create mapping for search and replace all occurences of the word under the cursor
   -- Create mapping for delete word on Ctrl+Backspace
 end

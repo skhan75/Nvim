@@ -44,6 +44,8 @@ function M.setup()
       end,
     }
 
+    use { "echasnovski/mini.icons", version = "*" }
+
     use {
       "folke/which-key.nvim",
       config = function()
@@ -570,6 +572,8 @@ function M.setup()
         }
       end
     }
+
+    
 
   end
 
