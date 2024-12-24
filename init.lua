@@ -28,20 +28,20 @@ vim.cmd [[
 vim.cmd [[colorscheme nightfox]]
 
 -- Load and setup the todolens plugin
-require("todolens").setup({
-    keywords = { "TODO", "FIXME", "NOTE" }, -- Define which keywords to track
-    highlight = {
-        TODO = "Yellow",
-        FIXME = "Red",
-        NOTE = "Blue",
-    },
-    languages = {
-        lua = "--",        -- Comment symbol for Lua
-        python = "#",      -- Comment symbol for Python
-        javascript = "//", -- Comment symbol for JavaScript
-    },
-})
-require("telescope").load_extension("todolens")
+--require("todolens").setup({
+--    keywords = { "TODO", "FIXME", "NOTE" }, -- Define which keywords to track
+--    highlight = {
+--        TODO = "Yellow",
+--        FIXME = "Red",
+--        NOTE = "Blue",
+--    },
+--    languages = {
+--        lua = "--",        -- Comment symbol for Lua
+--        python = "#",      -- Comment symbol for Python
+--        javascript = "//", -- Comment symbol for JavaScript
+--    },
+--})
+--require("telescope").load_extension("todolens")
 
 
 -- Additional transparency for specific UI elements

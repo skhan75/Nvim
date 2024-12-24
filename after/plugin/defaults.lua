@@ -47,7 +47,7 @@ local options = {
     updatetime = 300, -- ms to wait for trigger 'document_highlight'
 }
 
-function M.setup() 
+function M.setup()
     cmd [[filetype plugin indent on]]
     cmd [[syntax enable]]
 

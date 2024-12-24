@@ -55,7 +55,6 @@ function M.setup()
       end,
     }
 
-
     -- Nvim Tree File Explorer
     use {
       'nvim-tree/nvim-tree.lua',
@@ -249,20 +248,7 @@ function M.setup()
       'williamboman/mason-lspconfig.nvim',
       after = "mason.nvim",  -- Ensure this runs after mason.nvim
       config = function()
-        require("mason-lspconfig").setup({
-          ensure_installed = {
-            "tsserver",        -- TypeScript and JavaScript
-            "eslint",          -- Linter for JavaScript/TypeScript
-            "jsonls",          -- JSON
-            "html",            -- HTML (for React)
-            "cssls",           -- CSS (for React)
-            "pyright",         -- Python
-            "gopls",           -- Go
-            "jdtls",           -- Java
-            "lua_ls",          -- Lua (Updated from sumneko_lua)
-            "clangd",          -- C/C++
-          },
-        })
+        require("mason-lspconfig").setup()
       end
     }
 
@@ -573,7 +559,13 @@ function M.setup()
       end
     }
 
-    
+    use {
+      "folke/todo-comments.nvim",
+      requires = "nvim-lua/plenary.nvim",
+      config = function()
+        require("todo-comments").setup {}
+      end
+    }
 
   end
 

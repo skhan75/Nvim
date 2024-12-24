@@ -8,6 +8,11 @@ M.setup = function()
     return
   end
 
+  local ls_ok, _ = pcall(require, 'luasnip')
+  if ls_ok then
+    require('luasnip.loaders.from_vscode').lazy_load()
+  end
+
   cmp.setup({
     snippet = {
       expand = function(args)
@@ -125,6 +130,7 @@ M.setup = function()
     elseif lsp == 'elixirls' then
       -- New configuration for Elixir
       lspconfig[lsp].setup {
+        cmd = { "/opt/homebrew/bin/elixir-ls" },
         capabilities = capabilities,
         on_attach = on_attach,
         settings = {

@@ -1,20 +1,5 @@
 local wk = require("which-key")
 
---local function map_with_which_key(mode, lhs, rhs, opts)
---  local options = { noremap = true, silent = true }
---  if opts then
---    options = vim.tbl_extend("force", options, opts)
---  end
---  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
---
---  -- Register with which-key
---  if opts and opts.desc then
---    wk.register({
---      [lhs] = { rhs, opts.desc },
---    }, { mode = mode })
---  end
---end
-
 local function map_with_which_key(mode, lhs, rhs, opts)
   local options = { noremap = true, silent = true }
   if opts then
@@ -58,11 +43,11 @@ map_with_which_key("n", "<leader>gf", "<cmd>Telescope git_files<cr>", { desc = "
 map_with_which_key("n", "<leader>sl", "<cmd>Telescope session-lens search_session<cr>", { desc = "Search sessions" })
 
 -- Search within Configuration Files
-map_with_which_key("n", "<leader>fc", "<cmd>Telescope find_files cwd=~/.config/nvim<cr>",
-  { desc = "Search in config files" })
+map_with_which_key("n", "<leader>fc", "<cmd>Telescope find_files cwd=~/.config/nvim<cr>",{ desc = "Search in config files" })
 
 -- Diagnostics and LSP-related Searches
 map_with_which_key("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>", { desc = "Show diagnostics" })
+map_with_which_key("n", "<leader>dc", "<cmd>Telescope diagnostics bufnr=0<cr>", { desc = "Show diagnostics for current buffer" })
 map_with_which_key("n", "<leader>fr", "<cmd>Telescope lsp_references<cr>", { desc = "Show LSP references" })
 map_with_which_key("n", "<leader>ld", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "Show document symbols" })
 
@@ -149,3 +134,8 @@ map_with_which_key("n", "<leader>gd", ":lua require('gitsigns').toggle_deleted()
 map_with_which_key("n", "<leader>gw", ":lua require('gitsigns').toggle_word_diff()<CR>", { desc = "Toggle word diff" })
 map_with_which_key("n", "<leader>gB", ":lua require('gitsigns').toggle_current_line_blame()<CR>",
   { desc = "Toggle line blame" })
+
+-- Check for conflicts with <leader>h
+map_with_which_key("n", "<leader>hc", ":noh<CR>", { desc = "Clear search highlights" })
+map_with_which_key("n", "<leader>as", "<cmd>Telescope aerial<CR>", { desc = "Search symbols with Aerial" })
+

@@ -92,6 +92,7 @@ nvim_lsp.lua_ls.setup {
 
 -- Elixir Language Server Setup
 nvim_lsp.elixirls.setup{
+  cmd = { "/opt/homebrew/bin/elixir-ls" },
   on_attach = on_attach,
   settings = {
     elixirLS = {
