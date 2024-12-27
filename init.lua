@@ -30,6 +30,8 @@ vim.cmd [[
   syntax enable
 ]]
 
+vim.cmd("let g:netrw_liststyle = 3")
+
 vim.g.adwaita_transparent = true
 vim.g.adwaita_darker = true
 -- vim.g.adwaita_disable_cursorline = true

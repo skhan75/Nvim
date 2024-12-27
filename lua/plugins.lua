@@ -36,6 +36,22 @@ function M.setup()
     use { "lewis6991/impatient.nvim" }
 
     use {
+      'goolord/alpha-nvim',
+      requires = { 'nvim-tree/nvim-web-devicons' }, -- optional, for icons
+      config = function()
+        local startify = require("alpha.themes.startify")
+        -- available: devicons, mini, default is mini
+        -- if provider not loaded and enabled is true, it will try to use another provider
+        startify.file_icons.provider = "devicons"
+        require("alpha").setup(
+          startify.config
+        )
+        -- Disable folding on alpha buffer
+        vim.cmd([[autocmd FileType alpha setlocal nofoldenable]])
+      end
+    }
+
+    use {
       "kylechui/nvim-surround",
       config = function()
         require("nvim-surround").setup({
