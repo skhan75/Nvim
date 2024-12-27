@@ -28,6 +28,13 @@ function M.auto_cmds()
     set incsearch
   ]]
 
+  vim.o.timeoutlen = 300
+
+  -- highlight Normal    ctermbg=none guibg=none
+  --  highlight SignColumn ctermbg=none guibg=none
+  --  highlight LineNr    ctermbg=none guibg=none
+  --  highlight EndOfBuffer ctermbg=none guibg=none
+
   -- don't auto commenting new lines
   -- vim.cmd [[au BufEnter * set fo-=c fo-=r fo-=o]]
 

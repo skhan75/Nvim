@@ -1,22 +1,27 @@
+-- lua/cmp_lsp.lua
 local M = {}
 
 M.setup = function()
-  -- Setup nvim-cmp
   local ok, cmp = pcall(require, 'cmp')
   if not ok then
     vim.notify("nvim-cmp not installed", vim.log.levels.ERROR)
     return
   end
 
-  local ls_ok, _ = pcall(require, 'luasnip')
-  if ls_ok then
+  -- Optionally load VSCode-style snippets (including Elixir, JS, etc.)
+  local luasnip_ok, luasnip = pcall(require, 'luasnip')
+  if luasnip_ok then
+    require("luasnip.loaders.from_lua").load({ paths = { "~/.config/nvim/lua/snippets" } })
     require('luasnip.loaders.from_vscode').lazy_load()
   end
 
+  -- Basic nvim-cmp setup
   cmp.setup({
     snippet = {
       expand = function(args)
-        require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        if luasnip_ok then
+          luasnip.lsp_expand(args.body)
+        end
       end,
     },
     mapping = {
@@ -26,131 +31,53 @@ M.setup = function()
       ['<C-e>'] = cmp.mapping.abort(),
       ['<CR>'] = cmp.mapping.confirm({ select = true }),
       ['<Tab>'] = cmp.mapping(function(fallback)
-        if cmp.visible() then
-          cmp.select_next_item()
-        elseif require('luasnip').expand_or_jumpable() then
-          require('luasnip').expand_or_jump()
+        if luasnip_ok and luasnip.expand_or_jumpable() then
+          luasnip.expand_or_jump() -- Navigate within snippets first
+        elseif cmp.visible() then
+          cmp.select_next_item() -- Show auto-completion next
         else
-          fallback()
+          fallback() -- Fall back to default Tab behavior
         end
       end, { 'i', 's' }),
       ['<S-Tab>'] = cmp.mapping(function(fallback)
         if cmp.visible() then
           cmp.select_prev_item()
-        elseif require('luasnip').jumpable(-1) then
-          require('luasnip').jump(-1)
-          else
-            fallback()
+        elseif luasnip_ok and luasnip.jumpable(-1) then
+          luasnip.jump(-1)
+        else
+          fallback()
         end
       end, { 'i', 's' }),
     },
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
-      { name = 'luasnip' }, -- For luasnip users.
+      { name = 'luasnip' },
     }, {
       { name = 'buffer' },
     }),
   })
 
-  -- Setup cmdline & path completions
+  -- Setup cmdline completion (search `/`)
   cmp.setup.cmdline('/', {
     mapping = cmp.mapping.preset.cmdline(),
     sources = {
-      { name = 'buffer' }
-    }
+      { name = 'buffer' },
+    },
   })
 
+  -- Setup cmdline completion (commands `:`)
   cmp.setup.cmdline(':', {
     mapping = cmp.mapping.preset.cmdline(),
     sources = cmp.config.sources({
-      { name = 'path' }
+      { name = 'path' },
     }, {
-      { name = 'cmdline' }
-    })
+      { name = 'cmdline' },
+    }),
   })
-
-  -- Setup LSP keybindings and settings
-  local lspconfig = require('lspconfig')
-  local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-
-  -- Common LSP keybindings
-  local on_attach = function(client, bufnr)
-    -- Check if the LSP client supports certain capabilities
-    if not client.server_capabilities then
-      return
-    end
-
-    local opts = { noremap=true, silent=true, buffer=bufnr }
-
-    -- Keybindings for LSP actions
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
-    vim.keymap.set('n', '<leader>f', function()
-      if client.server_capabilities.documentFormattingProvider then
-        vim.lsp.buf.format({ async = true })
-      elseif client.server_capabilities.documentRangeFormattingProvider then
-        vim.lsp.buf.range_formatting()
-      end
-    end, opts)
-
-    -- Diagnostic keybindings
-    vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-    vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-    vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
-  end
-
-  -- LSP servers setup
-  local servers = { 'ts_ls', 'eslint', 'jsonls', 'html', 'cssls', 'pyright', 'gopls', 'jdtls', 'lua_ls', 'clangd', 'elixirls' }
-  for _, lsp in ipairs(servers) do
-    if lsp == 'lua_ls' then
-      -- Existing configuration for Lua
-      lspconfig[lsp].setup {
-        capabilities = capabilities,
-        on_attach = on_attach,
-        settings = {
-          Lua = {
-            runtime = {
-              version = 'LuaJIT',
-            },
-            diagnostics = {
-              globals = { 'vim' }, -- Recognize `vim` as a global variable
-            },
-            telemetry = {
-              enable = false,
-            },
-          },
-        },
-      }
-    elseif lsp == 'elixirls' then
-      -- New configuration for Elixir
-      lspconfig[lsp].setup {
-        cmd = { "/opt/homebrew/bin/elixir-ls" },
-        capabilities = capabilities,
-        on_attach = on_attach,
-        settings = {
-          elixirLS = {
-            dialyzerEnabled = true,
-            fetchDeps = false,
-            enableTestLenses = true,
-            suggestSpecs = true,
-          },
-        },
-      }
-    else
-      -- Default configuration for other servers
-      lspconfig[lsp].setup {
-        capabilities = capabilities,
-        on_attach = on_attach,
-      }
-    end
-  end
 end
+
+-- Export the cmp_nvim_lsp capabilities so other files can use them.
+M.capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 return M
 

@@ -6,14 +6,20 @@ require('telescope').load_extension('aerial')
 local nightfox = require("nightfox")
 nightfox.setup({
   options = {
-    transparent = false, -- Enable transparency for Nightfox
-    dim_inactive = false, -- Keep inactive windows opaque
+    --transparent = true, -- Note: Only used if you actually do :colorscheme nightfox
+    dim_inactive = false,
     styles = {
-      comments = "italic", -- Example: Style for comments
-      functions = "bold", -- Example: Style for functions
-      keywords = "italic,bold", -- Example: Style for keywords
+      comments = "italic",
+      functions = "bold",
+      keywords = "italic,bold",
     },
   },
+})
+
+require("tokyonight").setup({
+  style = "night",
+  transparent = true,
+  dim_inactive = false,
 })
 
 -- Enable true colors for Neovim
@@ -24,36 +30,20 @@ vim.cmd [[
   syntax enable
 ]]
 
--- Set and load Nightfox colorscheme
-vim.cmd [[colorscheme nightfox]]
-
--- Load and setup the todolens plugin
---require("todolens").setup({
---    keywords = { "TODO", "FIXME", "NOTE" }, -- Define which keywords to track
---    highlight = {
---        TODO = "Yellow",
---        FIXME = "Red",
---        NOTE = "Blue",
---    },
---    languages = {
---        lua = "--",        -- Comment symbol for Lua
---        python = "#",      -- Comment symbol for Python
---        javascript = "//", -- Comment symbol for JavaScript
---    },
---})
---require("telescope").load_extension("todolens")
-
+vim.g.adwaita_transparent = true
+vim.g.adwaita_darker = true
+-- vim.g.adwaita_disable_cursorline = true
+vim.cmd("colorscheme adwaita")
 
 -- Additional transparency for specific UI elements
 --vim.cmd [[
 --  hi Normal guibg=NONE ctermbg=NONE   " Main editor background
 --  hi NormalNC guibg=NONE ctermbg=NONE " Inactive windows
---  hi EndOfBuffer guibg=NONE ctermbg=NONE " Tilde (~) lines at the end of the buffer
 --  hi SignColumn guibg=NONE ctermbg=NONE  " Sign column (e.g., for LSP diagnostics)
---  hi LineNr guibg=NONE ctermbg=NONE     " Line numbers
 --  hi Pmenu guibg=NONE ctermbg=NONE      " Popup menu
 --  hi PmenuSel guibg=NONE ctermbg=NONE   " Selected popup menu item
 --  hi VertSplit guibg=NONE ctermbg=NONE  " Vertical split line
 --  hi StatusLineNC guibg=NONE ctermbg=NONE " Inactive status line
 --]]
-
+-- hi LineNr guibg=NONE ctermbg=NONE     " Line numbers
+-- hi EndOfBuffer guibg=NONE ctermbg=NONE " Tilde (~) lines at the end of the buffer

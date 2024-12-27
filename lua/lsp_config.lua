@@ -2,6 +2,8 @@ local nvim_lsp = require('lspconfig')
 local mason = require('mason')
 local mason_lspconfig = require('mason-lspconfig')
 
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
 -- Initialize Mason
 mason.setup()
 
@@ -47,7 +49,8 @@ mason_lspconfig.setup_handlers {
       on_attach = on_attach,
       flags = {
         debounce_text_changes = 150,
-      }
+      },
+      capabilities = capabilities,
     }
 
     -- Custom handler for ts_ls to suppress specific warnings
@@ -63,41 +66,52 @@ mason_lspconfig.setup_handlers {
           vim.lsp.diagnostic.on_publish_diagnostics(_, result, ctx, config)
         end,
       }
+
+    elseif server_name == "eslint" then
+      -- Fix on save for ESLint
+      config.on_attach = function(client, bufnr)
+        on_attach(client, bufnr)
+        vim.api.nvim_create_autocmd("BufWritePre", {
+          buffer = bufnr,
+          command = "EslintFixAll",
+        })
+      end
+      config.settings = {
+        codeAction = {
+          disableRuleComment = {
+            enable = true,
+            location = "separateLine",
+          },
+          showDocumentation = {
+            enable = true,
+          },
+        },
+      }
+
+    elseif server_name == "lua_ls" then
+      -- Lua language server for Neovim development
+      config.settings = {
+        Lua = {
+          runtime = { version = "LuaJIT" },
+          diagnostics = { globals = { "vim" } },
+          workspace = {
+            -- Make the server aware of Neovim runtime files
+            library = vim.api.nvim_get_runtime_file("", true),
+          },
+          telemetry = { enable = false },
+        },
+      }
+
+    elseif server_name == "elixirls" then
+      config.cmd = { "/opt/homebrew/bin/elixir-ls" }
+      config.settings = {
+        elixirLS = {
+          dialyzerEnabled = true,
+          fetchDeps = false,
+        },
+      }
     end
 
     nvim_lsp[server_name].setup(config)
   end,
-}
-
--- Setup Lua language server for Neovim development
-nvim_lsp.lua_ls.setup {
-  settings = {
-    Lua = {
-      runtime = {
-        version = 'LuaJIT',
-      },
-      diagnostics = {
-        globals = { 'vim' },
-      },
-      workspace = {
-        library = vim.api.nvim_get_runtime_file("", true),
-      },
-      telemetry = {
-        enable = false,
-      },
-    },
-  },
-  on_attach = on_attach,
-}
-
--- Elixir Language Server Setup
-nvim_lsp.elixirls.setup{
-  cmd = { "/opt/homebrew/bin/elixir-ls" },
-  on_attach = on_attach,
-  settings = {
-    elixirLS = {
-      dialyzerEnabled = true,
-      fetchDeps = false, -- Set to true if you want the language server to automatically fetch dependencies
-    },
-  },
 }

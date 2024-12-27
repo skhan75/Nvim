@@ -64,7 +64,17 @@ function M.setup()
       config = function()
         local ok, nvim_tree = pcall(require, 'nvim-tree')
         if ok then
-          nvim_tree.setup {}
+          nvim_tree.setup {
+            -- hijack_netrw = true,
+            hijack_netrw = false,                     -- Hijack netrw window
+            disable_netrw = false,                   -- Keep netrw enabled
+            -- open_on_setup = false,
+            -- open_on_setup_file = false,
+            hijack_directories = {
+              enable = false,                        -- Disable opening the tree for directories
+              auto_open = false,                     -- Disable auto-opening for directories
+            },
+          }
         end
       end
     }
@@ -114,12 +124,13 @@ function M.setup()
     use 'catppuccin/nvim'
     use 'Julpikar/night-owl.nvim'
     use { "ellisonleao/gruvbox.nvim" }
+    use 'Mofiqul/adwaita.nvim'
     use {
       'Shatur/neovim-ayu',
       config = function()
         require('ayu').setup({
-          mirage = true,
-          overrides = {},
+          terminal = true,
+          mirage = false,
         })
       end
     }
@@ -262,15 +273,15 @@ function M.setup()
 
 
     use {
-      'hrsh7th/nvim-cmp', -- The completion plugin
+      'hrsh7th/nvim-cmp',
       requires = {
-        'hrsh7th/cmp-nvim-lsp', -- LSP source for nvim-cmp
-        'hrsh7th/cmp-buffer', -- Buffer source for nvim-cmp
-        'hrsh7th/cmp-path', -- Path source for nvim-cmp
-        'hrsh7th/cmp-cmdline', -- Command line source for nvim-cmp
-        'L3MON4D3/LuaSnip', -- Snippet engine
-        'saadparwaiz1/cmp_luasnip', -- Snippet source for nvim-cmp
-        'rafamadriz/friendly-snippets', -- A bunch of snippets to use
+        'hrsh7th/cmp-nvim-lsp',
+        'hrsh7th/cmp-buffer',
+        'hrsh7th/cmp-path',
+        'hrsh7th/cmp-cmdline',
+        'L3MON4D3/LuaSnip',
+        'saadparwaiz1/cmp_luasnip',
+        'rafamadriz/friendly-snippets',
       },
       config = function()
         local ok, cmp_lsp = pcall(require, 'cmp_lsp')
@@ -281,72 +292,94 @@ function M.setup()
     }
 
     -- Pretty printing errors
-    use {
-      'rcarriga/nvim-notify',
+    use({
+      "rcarriga/nvim-notify",
       config = function()
-        local ok, notify = pcall(require, 'notify')
-        if ok then
-          vim.notify = notify
-        end
+        -- If you have a modern version, this should work
+        require("notify").setup({
+          background_colour = "#1f2335",
+          render = "compact",
+          stages = "slide",
+        })
+        vim.notify = require("notify")
       end
-    }
+    })
 
     use {
-      'nvim-lualine/lualine.nvim',
-      requires = { 'nvim-tree/nvim-web-devicons', opt = true }, -- Optional for file icons
+      "nvim-lualine/lualine.nvim",
+      requires = {
+        "nvim-tree/nvim-web-devicons",
+        "arkav/lualine-lsp-progress",
+      },
       config = function()
-        local ok, lualine = pcall(require, 'lualine')
-        if ok then
-          lualine.setup {
-            options = {
-              theme = 'auto', -- Automatically sets the theme based on your colorscheme
-              section_separators = {'', ''}, -- Custom separators for sections
-              component_separators = {'', ''}, -- Custom separators for components
-              disabled_filetypes = {}, -- Filetypes to disable lualine in
-            },
-            sections = {
-              lualine_a = {'mode'}, -- Display the current mode (e.g., INSERT, NORMAL)
-              lualine_b = {'branch', 'diff', 'diagnostics'}, -- Git branch, diff, and diagnostics
-              lualine_c = {
-                {
-                  'filename',
-                  file_status = true, -- Display file status (readonly, modified)
-                  path = 1 -- 0 = just filename, 1 = relative path, 2 = absolute path
-                },
-                {
-                  'lsp_progress',
-                  display_components = { 'lsp_client_name', 'spinner', 'percentage' },
-                  colors = {
-                    percentage  = '#ffffff',
-                    title  = '#ffffff',
-                    message  = '#ffffff',
-                    spinner = '#ffffff',
-                    lsp_client_name = '#ffffff',
-                    use = true,
-                  },
-                },
-              },
-              lualine_x = {
-                {
-                  'encoding', -- File encoding (e.g., utf-8)
-                  'fileformat', -- File format (e.g., unix, dos)
-                  'filetype', -- File type (e.g., python, lua)
-                }
-              },
-              lualine_y = {'progress'}, -- Display progress in the file
-              lualine_z = {'location'}, -- Display cursor location in the file
-            },
-            inactive_sections = {
-              lualine_a = {},
-              lualine_b = {},
-              lualine_c = {'filename'},
-              lualine_x = {'location'},
-              lualine_y = {},
-              lualine_z = {}
-            },
-            extensions = {'fugitive', 'nvim-tree', 'quickfix'}
-          }
+        local ok, lualine = pcall(require, "lualine")
+        if not ok then
+          return
         end
+
+        -- If you want LSP progress, make sure you also have `arkav/lualine-lsp-progress` installed
+        -- and require it somewhere before using the 'lsp_progress' component.
+        -- E.g.: local lsp_progress = require("lualine-lsp-progress")
+
+        lualine.setup({
+          options = {
+            theme = "auto",
+            globalstatus = true,
+
+            -- section_separators = { left = "", right = "" },
+            -- component_separators = { left = "", right = "" },
+            section_separators = { left = "", right = "" },
+            component_separators = { left = "", right = "" },
+
+            disabled_filetypes = {
+              statusline = {}, -- list filetypes you don’t want to show lualine in
+              winbar = {},
+            },
+          },
+
+          sections = {
+            lualine_a = { "mode" },            -- e.g., NORMAL, INSERT
+            lualine_b = { "branch", "diff", "diagnostics" },
+            lualine_c = {
+              {
+                "filename",
+                file_status = true,  -- show [+]- etc. for modified files
+                path = 1,            -- 1 = relative path
+              },
+              -- Uncomment if you have the "lualine-lsp-progress" plugin:
+              {
+                "lsp_progress",
+                display_components = { "lsp_client_name", "spinner", "percentage" },
+                colors = {
+                  percentage       = "#ffffff",
+                  title            = "#ffffff",
+                  message          = "#ffffff",
+                  spinner          = "#ffffff",
+                  lsp_client_name  = "#ffffff",
+                },
+              },
+            },
+            lualine_x = {
+              "encoding",
+              "fileformat",
+              "filetype",
+            },
+            lualine_y = { "progress" },
+            lualine_z = { "location" },
+          },
+
+          inactive_sections = {
+            lualine_a = {},
+            lualine_b = {},
+            lualine_c = { "filename" },
+            lualine_x = { "location" },
+            lualine_y = {},
+            lualine_z = {},
+          },
+
+          -- Extra integrations
+          extensions = { "fugitive", "nvim-tree", "quickfix" },
+        })
       end
     }
 
@@ -566,6 +599,10 @@ function M.setup()
         require("todo-comments").setup {}
       end
     }
+
+    use({ "jose-elias-alvarez/null-ls.nvim", requires = "nvim-lua/plenary.nvim" })
+
+    use({ "xiyaowong/transparent.nvim" })
 
   end
 
